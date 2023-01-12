@@ -60,20 +60,6 @@ class AllCocktailsResponse(BaseModel):
     imagename: str
     ingredients: List[IngredientAmountResponse]
 
- 
-
-
-# class ingredients(BaseModel):
-#     list()
-
-# @app.get("/")
-# def read_root():
-#     return {"Hello": "World"}
-
-
-# @app.get("/ingredients/{item_id}",response_model=Item)
-# def read_item(item_id: int, q: Union[str, None] = None):
-#     return {"item_id": item_id, "q": q}
 
 
 @app.get("/ingredients/{item_id}",response_model=IngredientResponse)
@@ -100,12 +86,6 @@ def get_all_cocktails():
             ingredient=i['ingredient'],
             amount=i['amount']
         ) for i in cocktails[k]['ingredients']]
-        # ingredient_list = [{
-        #     'id':i['id'],
-        #     'ingredient':i['ingredient'],
-        #     'amount':i['amount']
-        # } for i in cocktails[k]['ingredients']]
-        print('INGREDIENT LIST', ingredient_list)
         cocktail_list.append(
             AllCocktailsResponse(
                 id=k,
@@ -115,7 +95,6 @@ def get_all_cocktails():
                 ingredients=ingredient_list,
             )
         )
-    print(cocktail_list)
     return cocktail_list
 
 #UPDATE METHODS
@@ -127,7 +106,6 @@ def update_ingredient(ingredient_id: int, ingredient: Ingredient):
         'id': ingredient_id,
         'name':ingredient.ingredient,
     })
-    print(success)
     return {"ingredient": ingredient.ingredient, "id": ingredient_id}
 
 #CREATE METHODS
@@ -141,7 +119,6 @@ def add_cocktail(cocktail: Cocktail):
         'imagename' : cocktail.imagename,
         'ingredients':cocktail.ingredients
     })
-    print(success)
     return {"id": success, "name": cocktail.name, 'price':cocktail.price,'ingredients':cocktail.ingredients}
 
 
@@ -152,5 +129,4 @@ def add_ingredient(ingredient: Ingredient):
     success = db_conn.add_ingredient({
         'ingredient':ingredient.ingredient,
     })
-    print(success)
     return {"id": success, "ingredient": ingredient.ingredient}

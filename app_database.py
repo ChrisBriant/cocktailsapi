@@ -64,8 +64,6 @@ class Database:
         sql = f''' UPDATE ingredient SET 
                     name = '{item['ingredient']}'
                 WHERE id = {item['id']} '''
-
-        print('SQL IS', sql)
         cur = self.conn.cursor()
         cur.execute(sql)
         self.conn.commit()
@@ -75,7 +73,6 @@ class Database:
     def add_ingredient(self,item):
         sql = f''' INSERT INTO ingredient(ingredient)
                 VALUES('{item['ingredient']}') '''
-        print('SQL IS', sql)
         cur = self.conn.cursor()
         cur.execute(sql)
         self.conn.commit()
@@ -84,17 +81,13 @@ class Database:
     def add_cocktail(self,item):
         sql = f''' INSERT INTO cocktail(name,price,imagename)
                 VALUES('{item['name']}', {item['price']},'{item['imagename']}') '''
-        print('SQL IS', sql, item['ingredients'])
         cur = self.conn.cursor()
         cur.execute(sql)
         self.conn.commit()
         cocktail_id = cur.lastrowid
         for ingredient in item['ingredients']:
-            print(ingredient.ingredient_id)
-            print(ingredient.amount)
             sql = f''' INSERT INTO cocktail_ingredient(cocktail_id,ingredient_id,amount)
                 VALUES({cocktail_id}, {ingredient.ingredient_id}, {ingredient.amount}) '''
-            print('CI SQL IS', sql, item['ingredients'])
             cur = self.conn.cursor()
             cur.execute(sql)
             self.conn.commit()
@@ -123,25 +116,18 @@ class Database:
         rows = cur.fetchall()
         cocktails = {}
         for r in rows:
-            print(r)
             cocktails[r[0]] = {
                 'name' : r[2],
                 'price': r[1],
                 'imagename' : r[3],
                 'ingredients' : []
             }
-        print(cocktails) 
         for r in rows:
             cocktails[r[0]]['ingredients'].append({
                 'id' : r[6],
                 'ingredient' : r[7],
                 'amount' : r[5]
             })
-        print(cocktails)
-        # ingredients = [{
-        #     'id' : r[0],
-        #     'ingredient' : r[1],
-        # } for r in rows]
         return cocktails
 
     # def get_item(self,item_id):

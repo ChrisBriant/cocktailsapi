@@ -27,3 +27,7 @@ https://www.sqlitetutorial.net/sqlite-python/insert/
 Useful documentation
 
 https://fastapi.tiangolo.com/tutorial/response-model/
+
+
+Deploy on Linux
+https://www.vultr.com/docs/how-to-deploy-fastapi-applications-with-gunicorn-and-nginx-on-ubuntu-20-04/
