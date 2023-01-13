@@ -124,9 +124,9 @@ class Database:
             }
         for r in rows:
             cocktails[r[0]]['ingredients'].append({
-                'id' : r[6],
-                'ingredient' : r[7],
-                'amount' : r[5]
+                'id' : r[7],
+                'ingredient' : r[8],
+                'amount' : r[6]
             })
         return cocktails
 
