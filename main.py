@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app_database import Database
+import pdfkit, jinja2
 
 app = FastAPI()
 
@@ -60,7 +61,8 @@ class AllCocktailsResponse(BaseModel):
     imagename: str
     ingredients: List[IngredientAmountResponse]
 
-
+class PDFDownloadResponse(BaseModel):
+    download_url : str
 
 @app.get("/ingredients/{item_id}",response_model=IngredientResponse)
 def read_ingredient(ingredient_id: int):
@@ -130,3 +132,31 @@ def add_ingredient(ingredient: Ingredient):
         'ingredient':ingredient.ingredient,
     })
     return {"id": success, "ingredient": ingredient.ingredient}
+
+@app.post('/cocktails/createpdf',response_model=PDFDownloadResponse)
+def create_pdf(cocktail_ids: List[int]):
+    print('Will create a PDF')
+    #Get the cocktails from the database
+    db_conn = Database(DATABASE_PATH)
+    #success= 1
+    context = {
+        'cocktail_list' : db_conn.cocktails_with_ingredients(cocktail_ids)
+    }
+    print('COntext data', context)
+    #Code below will generate the PDF
+    # context = {
+    #     'test_text' : 'This is a test'
+    # }
+    template_loader =  jinja2.FileSystemLoader('./')
+    template_env = jinja2.Environment(loader=template_loader)
+    
+    template = template_env.get_template('pdf_template.html')
+    output_text = template.render(context)
+    #print('OUTPUTTED HTML', output_text)
+    f = open("htmltest.html", "w")
+    f.write(output_text)
+    f.close()
+
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+    pdfkit.from_string(output_text,'pdf_gen.pdf',configuration=config,css='style.css',options={"enable-local-file-access": ""})
+    return { 'download_url' : 'This will be a link to down load it' }

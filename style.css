@@ -1,0 +1,67 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    font-family: Arial, Helvetica, sans-serif;
+    background: rgb(236, 241, 184);
+}
+
+footer {
+    color: #fff;
+    background: #333;
+    height: 40px;
+    text-align: center;
+}
+
+header {
+    color: #fff;
+    background: rgb(43, 21, 38);
+}
+
+h1 {
+    font-size: 80px;
+}
+
+.heading-section h1, .heading-section p, .heading-section h2 {
+    text-align: center;
+}
+
+.cocktails-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.cocktail-image-container {
+    width: 20rem;
+    height: 20rem;
+    border-radius: 10px;
+}
+
+.cocktail-image-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.ingredients-container {
+    margin: 1rem;
+    padding: 20px;
+    width: 40%;
+    background-color: #f4c0ef;
+    border-radius: 10px;
+}
+
+.ingredients-container h3{
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.ingredients-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}

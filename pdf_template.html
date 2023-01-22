@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Cocktail Recipe List</title>
+</head>
+<body>
+    <header class="heading-section">
+        <h1>Cocktails List</h1>
+        <h2>This is a list of the cocktails to make at the party.</h2>
+    </header>
+    <main>
+        <div class="cocktails-list">
+            {% for cocktail in cocktail_list %}
+                <h2>{{ cocktail.name }}</h2>
+                <div class="cocktail-image-container">
+                    <img class="cocktail-image" src="data:image/jpg;base64,{{ cocktail.image_base64 }}" alt="{{ cocktail.name }}">
+                </div>
+                <div class="ingredients-container">
+                    <h3>Ingredients</h3>
+                    <div class="ingredients-box">
+                        <p><strong>Ingredient</strong></p><p><strong>Amount</strong></p>
+                        {% for ingredient in cocktail.ingredients %}
+                            <p>{{ ingredient.ingredient }}</p><p>{{ ingredient.amount }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+    <footer>
+        <p>Cocktails API - &copy;<script>document.write(new Date().getFullYear())</script> Chris Briant</p>
+    </footer>
+</body>
+</html>
