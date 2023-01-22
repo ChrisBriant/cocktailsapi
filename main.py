@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app_database import Database
-import pdfkit, jinja2, os, dotenv, boto3
+import pdfkit, jinja2, os, dotenv, boto3, random
 
 app = FastAPI()
 
@@ -155,7 +155,6 @@ def add_ingredient(ingredient: Ingredient):
 
 @app.post('/cocktails/createpdf',response_model=PDFDownloadResponse)
 def create_pdf(cocktail_ids: List[int]):
-    print('Will create a PDF')
     #Get the cocktails from the database
     db_conn = Database(DATABASE_PATH)
     #success= 1
@@ -164,22 +163,21 @@ def create_pdf(cocktail_ids: List[int]):
     }
     print('COntext data', context)
     #Code below will generate the PDF
-    # context = {
-    #     'test_text' : 'This is a test'
-    # }
     template_loader =  jinja2.FileSystemLoader('./')
     template_env = jinja2.Environment(loader=template_loader)
     
     template = template_env.get_template('pdf_template.html')
     output_text = template.render(context)
-    #print('OUTPUTTED HTML', output_text)
     f = open("htmltest.html", "w")
     f.write(output_text)
     f.close()
 
+    #Create the file name
+    filename = hex(random.getrandbits(128)) + '.pdf'
+
     #UNCOMMENT TO CREATE PDF
-    # config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
-    # pdfkit.from_string(output_text,'pdf_gen.pdf',configuration=config,css='style.css',options={"enable-local-file-access": ""})
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+    pdfkit.from_string(output_text,filename,configuration=config,css='style.css',options={"enable-local-file-access": ""})
 
     #TRANSFER TO STORAGE
     linode_obj_config = {
@@ -188,11 +186,12 @@ def create_pdf(cocktail_ids: List[int]):
         "endpoint_url": LINODE_CLUSTER_URL,
     }
     client = boto3.client("s3", **linode_obj_config)
-    print(dir(client))
 
-    #https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#using-boto3
-    data = open('pdf_gen.pdf', 'rb')
-    client.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(Key='pdf_gen.pdf', Body=data)
-    #client.delete_object(Bucket=settings.LINODE_BUCKET,Key=f'{settings.LINODE_BUCKET}/{instance.picture.name}')
-
-    return { 'download_url' : 'This will be a link to down load it' }
+    data = open(filename, 'rb')
+    response = client.put_object(Body=data,  
+                                    Bucket=AWS_STORAGE_BUCKET_NAME,
+                                    Key=filename,
+                                    ACL='public-read')
+    print(response)
+    os.remove(filename) 
+    return { 'download_url' : f'{AWS_S3_ENDPOINT_URL}/{filename}' }

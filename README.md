@@ -31,3 +31,6 @@ https://fastapi.tiangolo.com/tutorial/response-model/
 
 Deploy on Linux
 https://www.vultr.com/docs/how-to-deploy-fastapi-applications-with-gunicorn-and-nginx-on-ubuntu-20-04/
+
+Boto3 S3 Upload
+https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#using-boto3

@@ -131,17 +131,14 @@ class Database:
         return cocktails
 
     def cocktails_with_ingredients(self,cocktail_ids):
-        # print('List of ids', cocktail_ids)
         id_list_query = '('
         for i in range(0,len(cocktail_ids)):
             print('HELLO',i)
             id_list_query += f'{cocktail_ids[i]})' if i == len(cocktail_ids)-1 else f'{cocktail_ids[i]},'
-        # print('List of IDs again', id_list_query)    
         sql = f'''select c.name,c.price,c.imagename, ci.amount, i.ingredient from cocktail as c inner join cocktail_ingredient as ci on ci.cocktail_id = c.id inner join ingredient as i on ci.ingredient_id = i.id  where c.id in {id_list_query} order by c.name;'''
         cur = self.conn.cursor()
         cur.execute(sql)
         rows = cur.fetchall()
-        # print(rows)
         cocktails_obj = {}
         for r in rows:
             with open(f'assets/{r[2]}', "rb") as img_file:
@@ -159,23 +156,4 @@ class Database:
                 'ingredient' : r[4],
             })
         cocktails_as_list = [ cocktails_obj[key] for key in cocktails_obj.keys()]
-        # print(cocktails_as_list)
-
         return cocktails_as_list
-
-    # def get_item(self,item_id):
-    #     sql = f''' SELECT * FROM item WHERE id={item_id} '''
-    #     cur = self.conn.cursor()
-    #     cur.execute(sql)
-    #     rows = cur.fetchall()
-    #     item = {
-            
-    #     }
-    #     if len(rows) > 0:
-    #         item = {
-    #             'id' : rows[0][0],
-    #             'price' : rows[0][1],
-    #             'is_offer' : True if rows[0][2] == 'TRUE' else False,
-    #             'name' : rows[0][3]
-    #         }
-    #     return item
