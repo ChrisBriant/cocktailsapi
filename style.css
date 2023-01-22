@@ -61,7 +61,8 @@ h1 {
     text-align: center;
 }
 
-.ingredients-box {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.ingredients-box .ingredient-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }

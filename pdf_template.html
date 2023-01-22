@@ -22,9 +22,13 @@
                 <div class="ingredients-container">
                     <h3>Ingredients</h3>
                     <div class="ingredients-box">
-                        <p><strong>Ingredient</strong></p><p><strong>Amount</strong></p>
+                        <div class="ingredient-item">
+                            <p><strong>Ingredient</strong></p><p><strong>Amount</strong></p>
+                        </div>
                         {% for ingredient in cocktail.ingredients %}
-                            <p>{{ ingredient.ingredient }}</p><p>{{ ingredient.amount }}</p>
+                            <div class="ingredient-item">
+                                <p>{{ ingredient.ingredient }}</p><p>{{ ingredient.amount }}</p>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
