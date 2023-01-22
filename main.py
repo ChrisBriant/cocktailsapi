@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app_database import Database
-import pdfkit, jinja2
+import pdfkit, jinja2, os, dotenv, boto3
 
 app = FastAPI()
 
@@ -19,6 +19,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+#Linode Storage
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+dotenv_file = os.path.join(basedir, ".env")
+if os.path.isfile(dotenv_file):
+    dotenv.load_dotenv(dotenv_file)
+
+LINODE_BUCKET=os.environ.get('LINODE_BUCKET')
+LINODE_BUCKET_REGION=os.environ.get('LINODE_BUCKET_REGION')
+LINODE_BUCKET_ACCESS_KEY=os.environ.get('LINODE_BUCKET_ACCESS_KEY') 
+LINODE_BUCKET_SECRET_KEY=os.environ.get('LINODE_BUCKET_SECRET_KEY') 
+LINODE_CLUSTER_URL='https://eu-central-1.linodeobjects.com'
+
+AWS_S3_ENDPOINT_URL=f'https://{LINODE_BUCKET}.{LINODE_BUCKET_REGION}.linodeobjects.com'
+AWS_ACCESS_KEY_ID=LINODE_BUCKET_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY=LINODE_BUCKET_SECRET_KEY
+AWS_S3_REGION_NAME=LINODE_BUCKET_REGION
+AWS_S3_USE_SSL=True
+AWS_STORAGE_BUCKET_NAME=LINODE_BUCKET
 
 #Database
 DATABASE_PATH = r"./cocktails.db"
@@ -157,6 +177,22 @@ def create_pdf(cocktail_ids: List[int]):
     f.write(output_text)
     f.close()
 
-    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
-    pdfkit.from_string(output_text,'pdf_gen.pdf',configuration=config,css='style.css',options={"enable-local-file-access": ""})
+    #UNCOMMENT TO CREATE PDF
+    # config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+    # pdfkit.from_string(output_text,'pdf_gen.pdf',configuration=config,css='style.css',options={"enable-local-file-access": ""})
+
+    #TRANSFER TO STORAGE
+    linode_obj_config = {
+        "aws_access_key_id":AWS_ACCESS_KEY_ID,
+        "aws_secret_access_key": AWS_SECRET_ACCESS_KEY,
+        "endpoint_url": LINODE_CLUSTER_URL,
+    }
+    client = boto3.client("s3", **linode_obj_config)
+    print(dir(client))
+
+    #https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#using-boto3
+    data = open('pdf_gen.pdf', 'rb')
+    client.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(Key='pdf_gen.pdf', Body=data)
+    #client.delete_object(Bucket=settings.LINODE_BUCKET,Key=f'{settings.LINODE_BUCKET}/{instance.picture.name}')
+
     return { 'download_url' : 'This will be a link to down load it' }
