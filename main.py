@@ -161,7 +161,6 @@ def create_pdf(cocktail_ids: List[int]):
     context = {
         'cocktail_list' : db_conn.cocktails_with_ingredients(cocktail_ids)
     }
-    print('COntext data', context)
     #Code below will generate the PDF
     template_loader =  jinja2.FileSystemLoader('./')
     template_env = jinja2.Environment(loader=template_loader)

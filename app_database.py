@@ -133,7 +133,6 @@ class Database:
     def cocktails_with_ingredients(self,cocktail_ids):
         id_list_query = '('
         for i in range(0,len(cocktail_ids)):
-            print('HELLO',i)
             id_list_query += f'{cocktail_ids[i]})' if i == len(cocktail_ids)-1 else f'{cocktail_ids[i]},'
         sql = f'''select c.name,c.price,c.imagename, ci.amount, i.ingredient from cocktail as c inner join cocktail_ingredient as ci on ci.cocktail_id = c.id inner join ingredient as i on ci.ingredient_id = i.id  where c.id in {id_list_query} order by c.name;'''
         cur = self.conn.cursor()
