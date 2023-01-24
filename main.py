@@ -153,7 +153,7 @@ def add_ingredient(ingredient: Ingredient):
     })
     return {"id": success, "ingredient": ingredient.ingredient}
 
-@app.post('/cocktails/createpdf',response_model=PDFDownloadResponse)
+@app.post('/cocktails/createpdf/',response_model=PDFDownloadResponse)
 def create_pdf(cocktail_ids: List[int]):
     #Get the cocktails from the database
     db_conn = Database(DATABASE_PATH)
